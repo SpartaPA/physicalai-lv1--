@@ -1,1 +1,16 @@
-_TRAP_KEY_비공개.md
+# 환경 / 캐시
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+
+# 빌드 산출물
+build/
+install/
+log/
+
+# OS
+Thumbs.db
+.DS_Store
