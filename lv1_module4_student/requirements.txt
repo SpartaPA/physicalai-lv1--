@@ -1,0 +1,35 @@
+# Lv.1 모듈 ④ — 픽앤플레이스 로봇의 자세 추정과 궤적 생성
+#
+# 설치 (Windows PowerShell)
+#   python -m venv .venv
+#   .\.venv\Scripts\Activate.ps1
+#   python -m pip install --upgrade pip
+#   pip install -r requirements.txt
+#   python -m ipykernel install --user --name pose_lab --display-name "Python (pose_lab)"
+#
+# 설치 (macOS / Linux)
+#   python3 -m venv .venv
+#   source .venv/bin/activate
+#   python -m pip install --upgrade pip
+#   pip install -r requirements.txt
+#   python -m ipykernel install --user --name pose_lab --display-name "Python (pose_lab)"
+#
+# 문제 1 의 `pip freeze` 셀이 이 파일을 실제 설치 버전으로 덮어씁니다.
+# 제출 전 문제 6 에서 한 번 더 최신화하세요.
+
+numpy>=1.24
+scipy>=1.10
+matplotlib>=3.7
+pytest>=7.0
+jupyterlab>=4.0
+ipykernel
+pillow          # 애니메이션 GIF 저장 (writer="pillow")
+imageio         # GIF 프레임 수 확인 등 보조
+
+# ---------------------------------------------------------------------------
+# 사내 PC 에서 설치는 되는데 import 가 막히는 경우
+#   ImportError: DLL load failed ... 애플리케이션 제어 정책에서 이 파일을 차단했습니다
+# 라면 WDAC/AppLocker 가 특정 휠의 DLL 을 막는 것입니다.
+# 해당 패키지를 한 단계 낮은 버전으로 설치하면 대개 해결됩니다.
+#   예) pip install "scipy==1.15.3" "pyzmq==26.2.0"
+# ---------------------------------------------------------------------------

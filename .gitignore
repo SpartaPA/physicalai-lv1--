@@ -14,3 +14,6 @@ log/
 # OS
 Thumbs.db
 .DS_Store
+
+# 배포용 압축본은 저장소에 넣지 않는다 (제출도 zip 이 아니라 저장소로 한다)
+*.zip
