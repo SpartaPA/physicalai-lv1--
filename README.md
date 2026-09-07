@@ -1,4 +1,4 @@
-# Physical AI Robotics Lv.1 — 과제 모음
+# Physical AI Robotics Lv.1 — Branch B
 
 Lv.1 과제 체계(미니 퀴즈 · 실습 산출물 · 모듈 과제)와 모듈 과제 4개의 지시문, 발제 문서를 모아 둔 저장소입니다.
 
