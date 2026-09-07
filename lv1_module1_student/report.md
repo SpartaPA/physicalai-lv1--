@@ -500,3 +500,17 @@ SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea70", SYMLINK+="r
 ```
 
 두 장치는 idVendor가 10c4로 같으므로 제조사 ID만으로는 구분할 수 없다. 라이다의 idProduct=ea60과 IMU의 idProduct=ea70을 함께 비교하면 서로 다른 제품으로 구분할 수 있다.
+
+## 문제 3 — 팀 저장소 협업 이력
+
+`branch-a`와 `branch-b`에서 `README.md`의 첫 줄을 서로 다르게 수정했다. `branch-a`를 먼저 병합한 뒤 `branch-b`를 병합하면서 같은 줄에 충돌을 발생시켰고, 원래 제목을 최종 내용으로 선택해 해결했다.
+
+충돌 표식에서 `<<<<<<< HEAD` 아래는 현재 브랜치의 내용, `=======`는 양쪽 내용의 경계, `>>>>>>> branch-b` 위는 병합하려는 브랜치의 내용이다.
+
+이력 그래프 확인 명령은 다음과 같다.
+
+```bash
+git --no-pager log --oneline --graph --decorate --all
+```
+
+공유 브랜치의 병합 이력을 보존해야 할 때는 merge를 사용하고, 아직 공유하지 않은 개인 작업 브랜치를 최신 `main` 위에 정리할 때는 rebase를 사용한다. 이미 공유한 커밋은 rebase로 다시 쓰지 않는다.
