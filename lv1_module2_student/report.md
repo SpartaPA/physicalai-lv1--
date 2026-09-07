@@ -1452,7 +1452,7 @@ ros2 bag info bags
 
 ```text
 [INFO] [1788509921.069776117] [rosbag2_recorder]: Press SPACE for pausing/resuming
-[INFO] [1788509921.070450910] [rosbag2_storage]: Opened database 'bags/problem10/problem10_0.db3' for READ_WRITE.
+[INFO] [1788509921.070450910] [rosbag2_storage]: Opened database 'bags/problem10_0.db3' for READ_WRITE.
 [INFO] [1788509921.070763933] [rosbag2_recorder]: Listening for topics...
 [INFO] [1788509921.070912328] [rosbag2_recorder]: Event publisher thread: Starting
 [INFO] [1788509921.071366183] [rosbag2_recorder]: Subscribed to topic '/turtle_distance'
