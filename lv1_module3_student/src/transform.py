@@ -31,8 +31,16 @@ def make_T(R, t) -> np.ndarray:
 
     R 이 3x3 이 아니면 ValueError.
     """
-    # TODO: 문제 5-1
-    raise NotImplementedError("make_T 를 구현하세요")
+    R = np.asarray(R, dtype=float)
+    t = np.asarray(t, dtype=float)
+    if R.shape != (3, 3):
+        raise ValueError("R must have shape (3, 3)")
+    if t.shape != (3,):
+        raise ValueError("t must have shape (3,)")
+    T = np.eye(4, dtype=float)
+    T[:3, :3] = R
+    T[:3, 3] = t
+    return T
 
 
 def inv_T(T) -> np.ndarray:
@@ -46,8 +54,15 @@ def inv_T(T) -> np.ndarray:
 
     4x4 가 아니면 ValueError.
     """
-    # TODO: 문제 5-1
-    raise NotImplementedError("inv_T 를 구현하세요")
+    T = np.asarray(T, dtype=float)
+    if T.shape != (4, 4):
+        raise ValueError("T must have shape (4, 4)")
+    R = T[:3, :3]
+    t = T[:3, 3]
+    Ti = np.eye(4, dtype=float)
+    Ti[:3, :3] = R.T
+    Ti[:3, 3] = -R.T @ t
+    return Ti
 
 
 def inv_T_batch(Ts) -> np.ndarray:
@@ -60,8 +75,16 @@ def inv_T_batch(Ts) -> np.ndarray:
     힌트: 전치는 `np.swapaxes(..., 1, 2)`, 배치 행렬-벡터 곱은
           `np.einsum("nij,nj->ni", ...)` 로 쓸 수 있다.
     """
-    # TODO: 문제 5-4
-    raise NotImplementedError("inv_T_batch 를 구현하세요")
+    Ts = np.asarray(Ts, dtype=float)
+    if Ts.ndim != 3 or Ts.shape[1:] != (4, 4):
+        raise ValueError("Ts must have shape (N, 4, 4)")
+    R = Ts[:, :3, :3]
+    t = Ts[:, :3, 3]
+    result = np.zeros_like(Ts)
+    result[:, 3, 3] = 1.0
+    result[:, :3, :3] = np.swapaxes(R, 1, 2)
+    result[:, :3, 3] = -np.einsum("nij,nj->ni", result[:, :3, :3], t)
+    return result
 
 
 def to_homogeneous(P, w: float = 1.0) -> np.ndarray:
@@ -69,20 +92,26 @@ def to_homogeneous(P, w: float = 1.0) -> np.ndarray:
 
     w = 1 이면 점(위치), w = 0 이면 방향(벡터).
     """
-    # TODO: 문제 5-2
-    raise NotImplementedError("to_homogeneous 를 구현하세요")
+    P = np.asarray(P, dtype=float)
+    if P.ndim == 1:
+        if P.shape != (3,):
+            raise ValueError("P must have shape (3,) or (N, 3)")
+        return np.concatenate((P, [w]))
+    if P.ndim == 2 and P.shape[1] == 3:
+        return np.column_stack((P, np.full(P.shape[0], w, dtype=float)))
+    raise ValueError("P must have shape (3,) or (N, 3)")
 
 
 def transform_point(T, p) -> np.ndarray:
     """점 변환 (w = 1): 회전과 병진이 모두 적용된다. 반환은 (3,)."""
-    # TODO: 문제 5-2
-    raise NotImplementedError("transform_point 를 구현하세요")
+    result = np.asarray(T, dtype=float) @ to_homogeneous(p, 1.0)
+    return result[:3]
 
 
 def transform_direction(T, v) -> np.ndarray:
     """방향 변환 (w = 0): 회전만 적용되고 병진은 무시된다. 반환은 (3,)."""
-    # TODO: 문제 5-2
-    raise NotImplementedError("transform_direction 을 구현하세요")
+    result = np.asarray(T, dtype=float) @ to_homogeneous(v, 0.0)
+    return result[:3]
 
 
 def transform_points(T, P, w: float = 1.0) -> np.ndarray:
@@ -91,8 +120,12 @@ def transform_points(T, P, w: float = 1.0) -> np.ndarray:
     힌트: (T @ P_h.T).T 대신 P_h @ T.T 를 쓰면 전치가 한 번으로 끝나고
           메모리 접근도 행 방향이라 캐시에 유리하다.
     """
-    # TODO: 문제 5-2 / 6-2
-    raise NotImplementedError("transform_points 를 구현하세요")
+    T = np.asarray(T, dtype=float)
+    if T.shape != (4, 4):
+        raise ValueError("T must have shape (4, 4)")
+    P = to_homogeneous(P, w)
+    result = P @ T.T
+    return result[..., :3]
 
 
 def least_squares_normal_equation(A, b):
@@ -107,11 +140,20 @@ def least_squares_normal_equation(A, b):
     x : 최소자승해
     residual : b - A x
     """
-    # TODO: 문제 5-5
-    raise NotImplementedError("least_squares_normal_equation 을 구현하세요")
+    A = np.asarray(A, dtype=float)
+    b = np.asarray(b, dtype=float)
+    if A.ndim != 2 or b.ndim != 1 or A.shape[0] != b.size:
+        raise ValueError("A must be 2D and b must match its row count")
+    normal_matrix = A.T @ A
+    normal_rhs = A.T @ b
+    x = inverse_gauss_jordan(normal_matrix) @ normal_rhs
+    residual = b - A @ x
+    return x, residual
 
 
 def rmse(residual) -> float:
     """잔차의 RMSE = sqrt(mean(r^2))."""
-    # TODO: 문제 5-5
-    raise NotImplementedError("rmse 를 구현하세요")
+    residual = np.asarray(residual, dtype=float)
+    if residual.size == 0:
+        raise ValueError("residual must not be empty")
+    return float(np.sqrt(np.mean(residual * residual)))

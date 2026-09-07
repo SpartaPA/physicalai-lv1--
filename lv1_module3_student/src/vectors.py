@@ -56,14 +56,19 @@ def dot(a, b) -> float:
 
     두 벡터의 차원이 다르면 ValueError.
     """
-    # TODO: 문제 1-1
-    raise NotImplementedError("dot 을 구현하세요")
+    a = as_vector(a)
+    b = as_vector(b)
+    if a.shape != b.shape:
+        raise ValueError(
+            f"벡터 차원이 같아야 합니다. 받은 shape={a.shape}, {b.shape}"
+        )
+    return float(np.sum(a * b))
 
 
 def norm(v) -> float:
     """유클리드 노름. sqrt(v·v) — 위에서 만든 dot 을 재사용한다."""
-    # TODO: 문제 1-1
-    raise NotImplementedError("norm 을 구현하세요")
+    v = as_vector(v)
+    return float(np.sqrt(dot(v, v)))
 
 
 def angle_between(a, b, degrees: bool = True) -> float:
@@ -75,8 +80,17 @@ def angle_between(a, b, degrees: bool = True) -> float:
     주의 2. 부동소수점 오차로 |cos| 가 1 을 아주 조금 넘으면 arccos 가 nan 을 낸다.
             [-1, 1] 로 clip 해야 무작위 입력에서도 안전하다.
     """
-    # TODO: 문제 1-1
-    raise NotImplementedError("angle_between 을 구현하세요")
+    a = as_vector(a)
+    b = as_vector(b)
+
+    norm_a = norm(a)
+    norm_b = norm(b)
+    if np.isclose(norm_a, 0.0, atol=1e-12) or np.isclose(norm_b, 0.0, atol=1e-12):
+        raise ValueError("angle_between: zero-length vector is not allowed")
+
+    cos_theta = np.clip(dot(a, b) / (norm_a * norm_b), -1.0, 1.0)
+    result = np.arccos(cos_theta)
+    return np.rad2deg(result) if degrees else result
 
 
 def normalize(v, eps: float = 1e-12) -> np.ndarray:
@@ -87,8 +101,11 @@ def normalize(v, eps: float = 1e-12) -> np.ndarray:
     (2) 선택한 처리 방식과 근거를 마크다운에 적은 뒤, 그 방식대로 여기에 구현한다.
     선택에 따라 노트북/테스트의 검증 코드도 그 방식에 맞춰 작성한다.
     """
-    # TODO: 문제 1-2
-    raise NotImplementedError("normalize 를 구현하세요")
+    v = as_vector(v)
+    v_norm = norm(v)
+    if v_norm <= eps:
+        raise ValueError("normalize: cannot normalize zero-length vector")
+    return v / v_norm
 
 
 def project(a, b) -> np.ndarray:
@@ -99,14 +116,23 @@ def project(a, b) -> np.ndarray:
     분모가 |b|^2 이므로 b 를 미리 정규화할 필요는 없다.
     b 가 영벡터면 ValueError.
     """
-    # TODO: 문제 1-3
-    raise NotImplementedError("project 를 구현하세요")
+    a = as_vector(a)
+    b = as_vector(b)
+    if a.shape != b.shape:
+        raise ValueError(
+            f"벡터 차원이 같아야 합니다. 받은 shape={a.shape}, {b.shape}"
+        )
+    denominator = dot(b, b)
+    if np.isclose(denominator, 0.0, atol=1e-12):
+        raise ValueError("project: cannot project onto zero vector")
+    return (dot(a, b) / denominator) * b
 
 
 def reject(a, b) -> np.ndarray:
     """a 에서 b 방향 성분을 뺀 나머지(수직 성분). a = project + reject 가 성립해야 한다."""
-    # TODO: 문제 1-3
-    raise NotImplementedError("reject 을 구현하세요")
+    a = as_vector(a)
+    b = as_vector(b)
+    return a - project(a, b)
 
 
 def skew(a) -> np.ndarray:
@@ -119,14 +145,24 @@ def skew(a) -> np.ndarray:
     만족해야 하는 성질: [a]_x @ b == a x b,  [a]_x.T == -[a]_x
     3차원이 아니면 ValueError.
     """
-    # TODO: 문제 1-4
-    raise NotImplementedError("skew 를 구현하세요")
+    a = as_vector(a)
+    if a.size != 3:
+        raise ValueError(f"3차원 벡터가 필요합니다. 받은 shape={a.shape}")
+    x, y, z = a
+    return np.array([
+        [0.0, -z, y],
+        [z, 0.0, -x],
+        [-y, x, 0.0],
+    ])
 
 
 def cross(a, b) -> np.ndarray:
     """외적을 **반대칭행렬 곱으로** 계산한다 (`np.cross` 사용 금지)."""
-    # TODO: 문제 1-4
-    raise NotImplementedError("cross 를 구현하세요")
+    a = as_vector(a)
+    b = as_vector(b)
+    if a.size != 3 or b.size != 3:
+        raise ValueError("외적에는 두 개의 3차원 벡터가 필요합니다")
+    return skew(a) @ b
 
 
 def plane_normal(P1, P2, P3) -> np.ndarray:
@@ -135,8 +171,12 @@ def plane_normal(P1, P2, P3) -> np.ndarray:
     두 모서리 벡터(P2-P1, P3-P1)의 외적이 평면에 수직이다.
     세 점이 일직선이면 외적이 영벡터가 되어 평면이 하나로 정해지지 않는다 -> ValueError.
     """
-    # TODO: 문제 1-5
-    raise NotImplementedError("plane_normal 을 구현하세요")
+    p1 = as_vector(P1)
+    p2 = as_vector(P2)
+    p3 = as_vector(P3)
+    if p1.size != 3 or p2.size != 3 or p3.size != 3:
+        raise ValueError("평면을 정의하려면 세 개의 3차원 점이 필요합니다")
+    return normalize(cross(p2 - p1, p3 - p1))
 
 
 # ------------------------------------------------- 가우스 소거 기반 선형대수
@@ -157,14 +197,56 @@ def row_echelon(A, pivoting: bool = True):
     힌트: 0 인지 판정할 때는 `== 0` 대신 허용오차(tol)를 쓴다.
           예) tol = max(m, n) * np.finfo(float).eps * max(1.0, np.max(np.abs(U)))
     """
-    # TODO: 문제 1-6 / 문제 4
-    raise NotImplementedError("row_echelon 을 구현하세요")
+    U = np.asarray(A, dtype=float).copy()
+    if U.ndim != 2:
+        raise ValueError("row_echelon: expected a 2D matrix")
+
+    rows, cols = U.shape
+    scale = max(1.0, float(np.max(np.abs(U))) if U.size else 0.0)
+    tol = max(rows, cols) * np.finfo(float).eps * scale
+    pivot_row = 0
+    pivot_cols = []
+    n_swaps = 0
+
+    for pivot_col in range(cols):
+        if pivot_row >= rows:
+            break
+
+        column = np.abs(U[pivot_row:, pivot_col])
+        if pivoting:
+            swap_row = pivot_row + int(np.argmax(column))
+            if column[swap_row - pivot_row] <= tol:
+                continue
+        else:
+            candidates = np.flatnonzero(column > tol)
+            if candidates.size == 0:
+                continue
+            swap_row = pivot_row + int(candidates[0])
+
+        if abs(U[swap_row, pivot_col]) <= tol:
+            continue
+        if swap_row != pivot_row:
+            U[[pivot_row, swap_row]] = U[[swap_row, pivot_row]]
+            n_swaps += 1
+
+        pivot = U[pivot_row, pivot_col]
+        for row in range(pivot_row + 1, rows):
+            factor = U[row, pivot_col] / pivot
+            if abs(factor) > tol:
+                U[row, pivot_col:] -= factor * U[pivot_row, pivot_col:]
+            U[row, pivot_col] = 0.0
+
+        pivot_cols.append(pivot_col)
+        pivot_row += 1
+
+    U[np.abs(U) <= tol] = 0.0
+    return U, pivot_cols, n_swaps
 
 
 def rank(A) -> int:
     """행 사다리꼴의 피벗 개수 = rank."""
-    # TODO: 문제 1-6
-    raise NotImplementedError("rank 를 구현하세요")
+    _, pivot_cols, _ = row_echelon(A)
+    return len(pivot_cols)
 
 
 def det(A) -> float:
@@ -173,8 +255,15 @@ def det(A) -> float:
     피벗이 n 개보다 적으면(특이행렬) 0.0 을 돌려준다.
     정사각 행렬이 아니면 ValueError.
     """
-    # TODO: 문제 1-6
-    raise NotImplementedError("det 을 구현하세요")
+    A = np.asarray(A, dtype=float)
+    if A.ndim != 2 or A.shape[0] != A.shape[1]:
+        raise ValueError("det: expected a square matrix")
+
+    n = A.shape[0]
+    U, pivot_cols, n_swaps = row_echelon(A, pivoting=True)
+    if len(pivot_cols) < n:
+        return 0.0
+    return float(((-1.0) ** n_swaps) * np.prod(np.diag(U)))
 
 
 def gauss_eliminate(A, b, pivoting: bool = True, verbose: bool = False):
@@ -194,8 +283,50 @@ def gauss_eliminate(A, b, pivoting: bool = True, verbose: bool = False):
 
     피벗이 0 이면 해가 유일하지 않다 -> ZeroDivisionError.
     """
-    # TODO: 문제 4-1
-    raise NotImplementedError("gauss_eliminate 을 구현하세요")
+    A = np.asarray(A, dtype=float).copy()
+    b = as_vector(b).copy()
+    if A.ndim != 2 or A.shape[0] != A.shape[1]:
+        raise ValueError("A는 정사각 행렬이어야 합니다")
+    if b.size != A.shape[0]:
+        raise ValueError("b의 길이는 A의 행 개수와 같아야 합니다")
+
+    n = A.shape[0]
+    augmented = np.column_stack((A, b))
+    scale = max(1.0, float(np.max(np.abs(A))) if A.size else 0.0)
+    tol = n * np.finfo(float).eps * scale
+    steps = [augmented.copy()]
+
+    for col in range(n - 1):
+        if pivoting:
+            pivot_row = col + int(np.argmax(np.abs(augmented[col:, col])))
+            if pivot_row != col:
+                augmented[[col, pivot_row]] = augmented[[pivot_row, col]]
+
+        pivot = augmented[col, col]
+        if abs(pivot) <= tol:
+            raise ZeroDivisionError("0 피벗으로 인해 유일한 해를 구할 수 없습니다")
+
+        for row in range(col + 1, n):
+            factor = augmented[row, col] / pivot
+            augmented[row, col:] -= factor * augmented[col, col:]
+            augmented[row, col] = 0.0
+
+        steps.append(augmented.copy())
+        if verbose:
+            print(augmented)
+
+    if n and abs(augmented[-1, -2]) <= tol:
+        raise ZeroDivisionError("0 피벗으로 인해 유일한 해를 구할 수 없습니다")
+
+    x = np.zeros(n, dtype=float)
+    for row in range(n - 1, -1, -1):
+        rhs = augmented[row, -1] - np.sum(augmented[row, row + 1:n] * x[row + 1:])
+        pivot = augmented[row, row]
+        if abs(pivot) <= tol:
+            raise ZeroDivisionError("0 피벗으로 인해 유일한 해를 구할 수 없습니다")
+        x[row] = rhs / pivot
+
+    return x, steps
 
 
 def inverse_gauss_jordan(A) -> np.ndarray:
@@ -204,5 +335,29 @@ def inverse_gauss_jordan(A) -> np.ndarray:
     정사각이 아니면 ValueError, 특이행렬이면 np.linalg.LinAlgError.
     (`np.linalg.inv` 를 부르지 말고 소거로 직접 구한다)
     """
-    # TODO: 문제 4-3
-    raise NotImplementedError("inverse_gauss_jordan 을 구현하세요")
+    A = np.asarray(A, dtype=float)
+    if A.ndim != 2 or A.shape[0] != A.shape[1]:
+        raise ValueError("A는 정사각 행렬이어야 합니다")
+
+    n = A.shape[0]
+    augmented = np.hstack((A.copy(), np.eye(n, dtype=float)))
+    scale = max(1.0, float(np.max(np.abs(A))) if A.size else 0.0)
+    tol = n * np.finfo(float).eps * scale
+
+    for col in range(n):
+        pivot_row = col + int(np.argmax(np.abs(augmented[col:, col])))
+        if abs(augmented[pivot_row, col]) <= tol:
+            raise np.linalg.LinAlgError("특이행렬은 역행렬이 없습니다")
+        if pivot_row != col:
+            augmented[[col, pivot_row]] = augmented[[pivot_row, col]]
+
+        augmented[col] /= augmented[col, col]
+        for row in range(n):
+            if row == col:
+                continue
+            factor = augmented[row, col]
+            if abs(factor) > tol:
+                augmented[row] -= factor * augmented[col]
+            augmented[row, col] = 0.0
+
+    return augmented[:, n:]

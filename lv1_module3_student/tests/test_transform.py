@@ -28,35 +28,41 @@ def T():
 
 
 def test_inv_T_gives_identity(T):
-    # TODO: inv_T(T) @ T 와 T @ inv_T(T) 가 모두 4x4 단위행렬인지 검사
-    raise NotImplementedError("test_inv_T_gives_identity 를 작성하세요")
+    Ti = inv_T(T)
+    assert np.allclose(Ti @ T, np.eye(4))
+    assert np.allclose(T @ Ti, np.eye(4))
 
 
 def test_inv_T_matches_generic_inverse(T):
-    # TODO: inv_T(T) 가 np.linalg.inv(T) 와 일치하는지 검사 (np.linalg 는 검산용)
-    raise NotImplementedError("test_inv_T_matches_generic_inverse 를 작성하세요")
+    assert np.allclose(inv_T(T), np.linalg.inv(T))  # 검산용
 
 
 def test_point_and_direction_differ(T):
-    # TODO: 같은 벡터를 점(w=1)/방향(w=0)으로 변환하면 결과가 다르고,
-    #       그 차이가 정확히 병진 벡터 T[:3, 3] 이며,
-    #       방향 변환은 길이를 보존하는지 검사
-    raise NotImplementedError("test_point_and_direction_differ 를 작성하세요")
+    vector = np.array([1.0, 2.0, -0.5])
+    point = transform_point(T, vector)
+    direction = transform_direction(T, vector)
+    assert not np.allclose(point, direction)
+    assert np.allclose(point - direction, T[:3, 3])
+    assert np.isclose(np.linalg.norm(direction), np.linalg.norm(vector))
 
 
 def test_transform_points_is_vectorized(T):
-    # TODO: (N,3) 점군을 한 번에 변환한 결과가
-    #       transform_point 를 반복문으로 돌린 결과와 같은지 검사
-    raise NotImplementedError("test_transform_points_is_vectorized 를 작성하세요")
+    points = np.arange(15, dtype=float).reshape(5, 3)
+    expected = np.array([transform_point(T, point) for point in points])
+    assert np.allclose(transform_points(T, points), expected)
 
 
 def test_roundtrip_through_inverse(T):
-    # TODO: T 로 보냈다가 inv_T(T) 로 되돌리면 원래 점군이 나오는지 검사
-    raise NotImplementedError("test_roundtrip_through_inverse 를 작성하세요")
+    points = np.random.default_rng(42).standard_normal((20, 3))
+    assert np.allclose(transform_points(inv_T(T), transform_points(T, points)), points)
 
 
 def test_least_squares_matches_lstsq():
-    # TODO: 노이즈를 섞은 과결정 문제를 만들어
-    #       least_squares_normal_equation 의 해가 np.linalg.lstsq 와 일치하고
-    #       잔차가 A 의 열공간에 수직(A^T r = 0)인지 검사
-    raise NotImplementedError("test_least_squares_matches_lstsq 를 작성하세요")
+    rng = np.random.default_rng(42)
+    A = rng.standard_normal((30, 4))
+    expected_x = rng.standard_normal(4)
+    b = A @ expected_x + 1e-3 * rng.standard_normal(30)
+    x, residual = least_squares_normal_equation(A, b)
+    reference = np.linalg.lstsq(A, b, rcond=None)[0]  # 비교 대상
+    assert np.allclose(x, reference)
+    assert np.allclose(A.T @ residual, 0.0, atol=1e-9)
