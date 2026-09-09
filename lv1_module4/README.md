@@ -89,7 +89,7 @@ jupyter kernelspec list
 이 과제는 모듈 ③ 에서 **여러분이 구현한** 네 파일을 그대로 import 합니다. 배포본에는 들어 있지 않습니다.
 
 ```
-lv1_module3_student/src/vectors.py, rotation.py, transform.py, coordinate_chain.py  ->  src/
+lv1_module3/src/vectors.py, rotation.py, transform.py, coordinate_chain.py  ->  src/
 ```
 
 자세한 방법과 확인 명령은 `src/README_module3.md` 를 보세요. 모듈 ③ 이 `NotImplementedError` 상태라면

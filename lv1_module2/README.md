@@ -38,7 +38,7 @@
 ## 1. 폴더 구성
 
 ```
-lv1_module2_student/
+lv1_module2/
 ├── README.md                          ← 지금 이 파일
 └── ros2_ws/src/
     ├── turtle_interfaces/             ← 문제 6 인터페이스 (완성본)

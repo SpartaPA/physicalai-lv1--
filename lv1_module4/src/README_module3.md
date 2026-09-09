@@ -5,17 +5,17 @@
 이 폴더(`lv1_module4/src/`)로 복사해 넣으세요.
 
 ```
-lv1_module3_student/src/vectors.py           ->  src/vectors.py
-lv1_module3_student/src/rotation.py          ->  src/rotation.py
-lv1_module3_student/src/transform.py         ->  src/transform.py
-lv1_module3_student/src/coordinate_chain.py  ->  src/coordinate_chain.py
+lv1_module3/src/vectors.py           ->  src/vectors.py
+lv1_module3/src/rotation.py          ->  src/rotation.py
+lv1_module3/src/transform.py         ->  src/transform.py
+lv1_module3/src/coordinate_chain.py  ->  src/coordinate_chain.py
 ```
 
 Windows PowerShell 예시 (경로는 본인 환경에 맞게):
 
 ```powershell
-Copy-Item ..\lv1_module3_student\src\vectors.py, ..\lv1_module3_student\src\rotation.py, `
-          ..\lv1_module3_student\src\transform.py, ..\lv1_module3_student\src\coordinate_chain.py  src\
+Copy-Item ..\lv1_module3\src\vectors.py, ..\lv1_module3\src\rotation.py, `
+          ..\lv1_module3\src\transform.py, ..\lv1_module3\src\coordinate_chain.py  src\
 ```
 
 ## 이 과제가 사용하는 모듈 ③ API

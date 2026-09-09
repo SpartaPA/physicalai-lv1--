@@ -17,9 +17,9 @@ Lv.1 과제 체계(미니 퀴즈 · 실습 산출물 · 모듈 과제)와 모듈
 
 | 폴더 | 내용 |
 |------|------|
-| `lv1_module2_student/` | 과제 ② 문제 5~9 예제 코드 (`turtle_interfaces`, `turtle_examples` 패키지, launch/params) — 주석으로 동작 원리 설명 |
-| `lv1_module3_student/` | 과제 ③ 노트북 6개(검증 셀·3D 그림 셀 제공, 구현은 TODO) + `src/`·`tests/` 뼈대 |
-| `lv1_module4_student/` | 과제 ④ 노트북 3개(검증 셀·3D 그림·애니메이션 셀 제공) + `src/`·`tests/` 뼈대, 발표 자료 템플릿 |
+| `lv1_module2/` | 과제 ② 문제 5~9 예제 코드 (`turtle_interfaces`, `turtle_examples` 패키지, launch/params) — 주석으로 동작 원리 설명 |
+| `lv1_module3/` | 과제 ③ 노트북 6개(검증 셀·3D 그림 셀 제공, 구현은 TODO) + `src/`·`tests/` 뼈대 |
+| `lv1_module4/` | 과제 ④ 노트북 3개(검증 셀·3D 그림·애니메이션 셀 제공) + `src/`·`tests/` 뼈대, 발표 자료 템플릿 |
 
 ## 제출 방법
 

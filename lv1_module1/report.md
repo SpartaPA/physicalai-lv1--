@@ -443,7 +443,7 @@ SUBSYSTEM=="block", KERNEL=="loop*", ATTR{loop/backing_file}=="/home/pa19/fake_s
 규칙 파일을 시스템에 복사하고 udev 규칙을 다시 불러온다. 아래 명령은 제출 저장소의 최상위 디렉터리에서 실행한다.
 
 ```bash
-sudo cp lv1_module1_student/rules/99-robot-sensor.rules /etc/udev/rules.d/99-robot-sensor.rules
+sudo cp lv1_module1/rules/99-robot-sensor.rules /etc/udev/rules.d/99-robot-sensor.rules
 sudo udevadm control --reload-rules
 ```
 

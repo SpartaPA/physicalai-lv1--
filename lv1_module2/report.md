@@ -125,7 +125,7 @@ make
 -- Detecting CXX compile features - done
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/pa19/physicalai-lv1-assignments/hw/physicalai-lv1-assignments/lv1_module2_student/cpp_basics/sensors/build
+-- Build files have been written to: /home/pa19/physicalai-lv1-assignments/hw/physicalai-lv1-assignments/lv1_module2/cpp_basics/sensors/build
 [ 14%] Building CXX object CMakeFiles/sensor_demo.dir/main.cpp.o
 [ 28%] Building CXX object CMakeFiles/sensor_demo.dir/sensor.cpp.o
 [ 42%] Linking CXX executable sensor_demo
@@ -374,7 +374,7 @@ ros2 run turtle_cpp distance_subscriber
 문제 5~9의 모든 새 터미널에서는 먼저 다음 명령으로 워크스페이스와 ROS 2 환경을 설정한다.
 
 ```bash
-cd /home/pa19/physicalai-lv1-assignments/hw/physicalai-lv1-assignments/lv1_module2_student/ros2_ws
+cd /home/pa19/physicalai-lv1-assignments/hw/physicalai-lv1-assignments/lv1_module2/ros2_ws
 source /opt/ros/humble/setup.bash
 source install/setup.bash
 ```
@@ -841,7 +841,7 @@ float32 progress
 CMakeLists.txt의 `rosidl_generate_interfaces`에 네 인터페이스를 등록하고 빌드한 뒤 모두 확인한다.
 
 ```bash
-cd lv1_module2_student/ros2_ws
+cd lv1_module2/ros2_ws
 source /opt/ros/humble/setup.bash
 colcon build --packages-select turtle_interfaces
 source install/setup.bash
@@ -1440,8 +1440,8 @@ rviz2
 두 토픽을 약 30초간 기록한다. 기존 3.65초 bag은 새 기록으로 교체해야 한다.
 
 ```bash
-# lv1_module2_student 디렉터리에서 실행
-cd /home/pa19/physicalai-lv1-assignments/hw/physicalai-lv1-assignments/lv1_module2_student
+# lv1_module2 디렉터리에서 실행
+cd /home/pa19/physicalai-lv1-assignments/hw/physicalai-lv1-assignments/lv1_module2
 timeout --signal=INT 30s ros2 bag record -o problem10 /turtle1/pose /turtle_distance
 mv problem10/metadata.yaml problem10/problem10_0.db3 bags/
 rmdir problem10
@@ -1470,11 +1470,11 @@ ros2 bag info bags
 
 ```bash
 # 터미널 1: 먼저 실행해 재생 시작 부분부터 구독
-cd /home/pa19/physicalai-lv1-assignments/hw/physicalai-lv1-assignments/lv1_module2_student
+cd /home/pa19/physicalai-lv1-assignments/hw/physicalai-lv1-assignments/lv1_module2
 ros2 run turtle_py distance_subscriber
 
 # 터미널 2: 구독자가 실행된 것을 확인한 뒤 재생
-cd /home/pa19/physicalai-lv1-assignments/hw/physicalai-lv1-assignments/lv1_module2_student
+cd /home/pa19/physicalai-lv1-assignments/hw/physicalai-lv1-assignments/lv1_module2
 ros2 bag play bags
 ```
 

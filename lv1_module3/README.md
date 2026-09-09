@@ -154,7 +154,7 @@ jupyter lab
 ## 5. 폴더 구조
 
 ```
-lv1_module3_student/
+lv1_module3/
 ├── README.md              # 이 문서
 ├── requirements.txt
 ├── .gitignore             # .venv, __pycache__, .ipynb_checkpoints 제외

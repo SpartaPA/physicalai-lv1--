@@ -70,7 +70,7 @@ PCA 주축 흔들림은 길쭉한 점군 2.481도, 구형 점군 72.729도였다
 
 ### 부록 — 재현 정보
 
-- Python: 3.10.12, 실행 환경: /home/pa19/physicalai-lv1-assignments/hw/physicalai-lv1-assignments/lv1_module4_student/../lv1_module3_student/.venv/bin/python
+- Python: 3.10.12, 실행 환경: /home/pa19/physicalai-lv1-assignments/hw/physicalai-lv1-assignments/lv1_module4/../lv1_module3/.venv/bin/python
 - 주요 패키지: NumPy 2.2.6; 전체 패키지 버전은 requirements.txt 참조.
 - 난수 시드: np.random.default_rng(42).
 - 세 노트북을 각각 새 Python 프로세스에서 위에서 아래로 실행했고, 모든 검증 셀과 발표 자료·GIF 검증이 통과했다.
