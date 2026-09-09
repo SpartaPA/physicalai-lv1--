@@ -252,9 +252,6 @@ topic-monitor==0.20.9
 tornado==6.5.8
 traitlets==5.16.1
 trajectory-msgs==4.9.1
--e git+ssh://git@github.com/SpartaPA/JunmyeongPark.git@a4df199826042c7442ca73c67c1922186cdb7bfc#egg=turtle_examples&subdirectory=lv1_module2/ros2_ws/build/turtle_examples
-turtle-interfaces==0.0.0
--e git+ssh://git@github.com/SpartaPA/JunmyeongPark.git@a4df199826042c7442ca73c67c1922186cdb7bfc#egg=turtle_py&subdirectory=lv1_module2/ros2_ws/build/turtle_py
 # Editable install with no version control (turtlebot3-example==2.3.7)
 -e /home/pa19/turtlebot3_ws/build/turtlebot3_example
 turtlebot3-msgs==2.4.0
