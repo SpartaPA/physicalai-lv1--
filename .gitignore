@@ -24,3 +24,4 @@ motor_demo_broken
 no_virtual_asan
 __pycache__/
 lv1_module2_student/ros2_ws/bags/
+/removed/

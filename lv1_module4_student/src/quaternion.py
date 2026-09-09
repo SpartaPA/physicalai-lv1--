@@ -30,8 +30,37 @@ def matrix_to_quaternion(R) -> np.ndarray:
 
     반환값은 반드시 정규화하고, w >= 0 이 되도록 부호를 맞춘다 (비교가 편해진다).
     """
-    # TODO: 문제 3-1
-    raise NotImplementedError("matrix_to_quaternion 을 구현하세요")
+    trace = np.trace(R)
+
+    if trace > 0:
+        w = 0.5 * np.sqrt(1 + trace)
+        x = (R[2][1] - R[1][2]) / (4 * w)
+        y = (R[0][2] - R[2][0]) / (4 * w)
+        z = (R[1][0] - R[0][1]) / (4 * w)
+        v = [w, x, y, z]
+
+    else:
+        diag_R = np.diag(R)
+        max_idx = np.argmax(diag_R)
+
+        S = 2 * np.sqrt(1 - trace + 2 * diag_R[max_idx])
+
+        i = max_idx
+        j = (i + 1) % 3
+        k = (i + 2) % 3
+
+        v = [0.0] * 4
+
+        v[0] = (R[k][j] - R[j][k]) / S
+        v[i + 1] = S / 4
+        v[j + 1] = (R[i][j] + R[j][i]) / S
+        v[k + 1] = (R[i][k] + R[k][i]) / S
+
+    q = np.asarray([v[1], v[2], v[3], v[0]], dtype=float)
+    q /= np.linalg.norm(q)
+    if q[3] < 0:
+        q = -q
+    return q
 
 
 def quaternion_to_matrix(q) -> np.ndarray:
@@ -43,8 +72,18 @@ def quaternion_to_matrix(q) -> np.ndarray:
 
     입력이 정확히 단위가 아닐 수 있으므로 먼저 정규화한다. q 와 -q 는 같은 R 을 준다.
     """
-    # TODO: 문제 3-1
-    raise NotImplementedError("quaternion_to_matrix 를 구현하세요")
+    q = np.asarray(q, dtype=float)
+    if q.shape != (4,):
+        raise ValueError("q must have shape (4,)")
+    norm = np.linalg.norm(q)
+    if not np.isfinite(norm) or norm == 0:
+        raise ValueError("q must have a finite, nonzero norm")
+    x, y, z, w = q / norm
+    return np.array([
+        [1 - 2 * (y*y + z*z), 2 * (x*y - z*w), 2 * (x*z + y*w)],
+        [2 * (x*y + z*w), 1 - 2 * (x*x + z*z), 2 * (y*z - x*w)],
+        [2 * (x*z - y*w), 2 * (y*z + x*w), 1 - 2 * (x*x + y*y)],
+    ])
 
 
 def quat_angle(q0, q1) -> float:
@@ -52,8 +91,11 @@ def quat_angle(q0, q1) -> float:
 
         angle = 2 * arccos(|q0 . q1|)
     """
-    # TODO: 문제 3-2 (slerp 안에서 재사용)
-    raise NotImplementedError("quat_angle 을 구현하세요")
+    q0 = np.asarray(q0, dtype=float)
+    q1 = np.asarray(q1, dtype=float)
+    q0 = q0 / np.linalg.norm(q0)
+    q1 = q1 / np.linalg.norm(q1)
+    return float(2 * np.arccos(np.clip(abs(q0 @ q1), 0.0, 1.0)))
 
 
 def slerp(q0, q1, t: float, eps: float = 1e-8) -> np.ndarray:
@@ -70,8 +112,21 @@ def slerp(q0, q1, t: float, eps: float = 1e-8) -> np.ndarray:
 
     반환값은 단위 쿼터니언이어야 한다. t = 0 이면 q0, t = 1 이면 (부호를 맞춘) q1.
     """
-    # TODO: 문제 3-2 · 3-5
-    raise NotImplementedError("slerp 를 구현하세요")
+    q0 = np.asarray(q0, dtype=float)
+    q1 = np.asarray(q1, dtype=float)
+    q0 = q0 / np.linalg.norm(q0)
+    q1 = q1 / np.linalg.norm(q1)
+    d = float(q0 @ q1)
+    if d < 0:
+        q1 = -q1
+        d = -d
+    d = np.clip(d, 0.0, 1.0)
+    if d > 1 - eps:
+        q = (1 - t) * q0 + t * q1
+    else:
+        omega = np.arccos(d)
+        q = (np.sin((1 - t) * omega) * q0 + np.sin(t * omega) * q1) / np.sin(omega)
+    return q / np.linalg.norm(q)
 
 
 def lerp_quat(q0, q1, t: float, normalize: bool = False) -> np.ndarray:
@@ -82,5 +137,9 @@ def lerp_quat(q0, q1, t: float, normalize: bool = False) -> np.ndarray:
     normalize=False 이면 정규화하지 않은 값을 그대로 돌려준다 — 크기가 1 에서 얼마나
     벗어나는지 관찰하는 데 쓴다. normalize=True 이면 정규화한다 (NLERP).
     """
-    # TODO: 문제 3-4
-    raise NotImplementedError("lerp_quat 를 구현하세요")
+    q0 = np.asarray(q0, dtype=float)
+    q1 = np.asarray(q1, dtype=float)
+    if q0 @ q1 < 0:
+        q1 = -q1
+    q = (1 - t) * q0 + t * q1
+    return q / np.linalg.norm(q) if normalize else q

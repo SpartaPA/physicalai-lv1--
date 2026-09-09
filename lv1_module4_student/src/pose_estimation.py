@@ -37,8 +37,23 @@ def pca_axes(P):
     eigvals : (3,) 내림차순 고유값 (각 축 방향 분산)
     centroid : (3,) 점군 중심
     """
-    # TODO: 문제 5-1
-    raise NotImplementedError("pca_axes 를 구현하세요")
+    P = np.asarray(P, dtype=float)
+    if P.ndim != 2 or P.shape[1] != 3 or len(P) < 2:
+        raise ValueError("P must have shape (N, 3), N >= 2")
+    centroid = np.mean(P, axis=0)
+    X = P - centroid
+    N = len(P)
+    C = X.T @ X / (N - 1)
+
+    eigvals, axes = np.linalg.eigh(C)
+
+    order = np.argsort(eigvals)[::-1]
+    eigvals = eigvals[order]
+    axes = axes[:, order]
+
+    if np.linalg.det(axes) < 0:
+        axes[:, -1] *= -1
+    return axes, eigvals, centroid
 
 
 def kabsch(P, Q):
@@ -55,8 +70,16 @@ def kabsch(P, Q):
     R : (3,3) 회전행렬 (det = +1)
     t : (3,) 병진
     """
-    # TODO: 문제 5-3
-    raise NotImplementedError("kabsch 를 구현하세요")
+    P = np.asarray(P, dtype=float)
+    Q = np.asarray(Q, dtype=float)
+    if P.ndim != 2 or P.shape[1] != 3 or P.shape != Q.shape or len(P) < 3:
+        raise ValueError("P and Q must have matching shape (N, 3), N >= 3")
+    cP, cQ = P.mean(axis=0), Q.mean(axis=0)
+    U, _, Vt = np.linalg.svd((P - cP).T @ (Q - cQ))
+    D = np.eye(3)
+    D[-1, -1] = np.sign(np.linalg.det(Vt.T @ U.T))
+    R = Vt.T @ D @ U.T
+    return R, cQ - R @ cP
 
 
 def fit_plane_lstsq(P):
@@ -73,8 +96,24 @@ def fit_plane_lstsq(P):
     d : float — 평면 상수 (n . p + d = 0)
     residuals : (N,) 각 점의 부호 있는 평면까지의 거리 n . p + d
     """
-    # TODO: 문제 5-5
-    raise NotImplementedError("fit_plane_lstsq 를 구현하세요")
+    P = np.asarray(P, dtype=float)
+    if P.ndim != 2 or P.shape[1] != 3 or len(P) < 3:
+        raise ValueError("P must have shape (N, 3), N >= 3")
+    A = np.column_stack((P[:, :2], np.ones(len(P))))
+    if np.linalg.matrix_rank(A) == 3:
+        coeff = np.linalg.solve(A.T @ A, A.T @ P[:, 2])
+        normal = np.array([coeff[0], coeff[1], -1.0])
+        scale = np.linalg.norm(normal)
+        normal /= scale
+        d = float(coeff[2] / scale)
+    else:
+        # z = ax + by + c로 나타낼 수 없는 수직 평면은 SVD로 피팅한다.
+        center = P.mean(axis=0)
+        _, _, Vt = np.linalg.svd(P - center, full_matrices=False)
+        normal = Vt[-1]
+        d = float(-normal @ center)
+    return normal, d, P @ normal + d
+
 
 
 def remove_outliers(P, residuals, k: float = 3.0):
@@ -89,5 +128,11 @@ def remove_outliers(P, residuals, k: float = 3.0):
     P_clean : (M,3) 남은 점
     mask : (N,) bool — True 가 남긴 점. P 와 대응 점군에 같은 mask 를 적용해야 Kabsch 대응이 유지된다
     """
-    # TODO: 문제 5-5
-    raise NotImplementedError("remove_outliers 를 구현하세요")
+    P = np.asarray(P, dtype=float)
+    residuals = np.asarray(residuals, dtype=float)
+    if residuals.shape != (len(P),) or len(P) == 0 or k <= 0:
+        raise ValueError("residuals must match nonempty P, and k must be positive")
+    sigma = 1.4826 * np.median(np.abs(residuals - np.median(residuals)))
+    tolerance = np.finfo(float).eps * max(1.0, float(np.max(np.abs(P)))) * 10
+    mask = np.abs(residuals) < max(k * sigma, tolerance)
+    return P[mask], mask

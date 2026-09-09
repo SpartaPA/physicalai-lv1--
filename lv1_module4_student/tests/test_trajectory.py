@@ -41,23 +41,30 @@ def waypoints(request):
 # --- 1. 선형 보간이 경유점을 지나는가 -----------------------------------------
 
 def test_linear_interp_hits_waypoints(waypoints):
-    # TODO: linear_interp(t_wp, q_wp, t_wp) == q_wp 인지 검사 (shape 도 확인)
-    raise NotImplementedError("test_linear_interp_hits_waypoints 를 작성하세요")
+    t_wp, q_wp = waypoints
+    actual = linear_interp(t_wp, q_wp, t_wp)
+    assert actual.shape == q_wp.shape
+    assert np.allclose(actual, q_wp)
 
 
 # --- 2. 큐빅 스플라인이 경유점을 지나는가 -------------------------------------
 
 def test_cubic_spline_hits_waypoints(waypoints):
-    # TODO: cubic_spline_interp(t_wp, q_wp, t_wp) == q_wp 인지 검사 (shape 도 확인)
-    raise NotImplementedError("test_cubic_spline_hits_waypoints 를 작성하세요")
+    t_wp, q_wp = waypoints
+    actual = cubic_spline_interp(t_wp, q_wp, t_wp)
+    assert actual.shape == q_wp.shape
+    assert np.allclose(actual, q_wp)
 
 
 # --- 3. 5차 다항식 경계 조건 ---------------------------------------------------
 
 def test_quintic_boundary_conditions():
-    # TODO: t = linspace(t0, tf, 201) 로 quintic_profile(t, 0.0, 2.0, 0.0, 1.0) 를 평가해
-    #       q[0] == 0, q[-1] == 1, qd[0] == qd[-1] == 0, qdd[0] == qdd[-1] == 0 인지 검사
-    raise NotImplementedError("test_quintic_boundary_conditions 를 작성하세요")
+    t = np.linspace(0.0, 2.0, 201)
+    q, qd, qdd = quintic_profile(t, 0.0, 2.0, 0.0, 1.0)
+    assert q.shape == qd.shape == qdd.shape == t.shape
+    assert np.allclose(q[[0, -1]], [0, 1])
+    assert np.allclose(qd[[0, -1]], 0)
+    assert np.allclose(qdd[[0, -1]], 0)
 
 
 # --- 여기부터는 추가 테스트 (권장) -------------------------------------------

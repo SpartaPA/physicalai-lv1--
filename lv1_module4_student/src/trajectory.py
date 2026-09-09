@@ -25,8 +25,10 @@ def linear_interp(t_wp, q_wp, t) -> np.ndarray:
 
     위치는 이어지지만 경유점에서 속도가 불연속(꺾임)이다.
     """
-    # TODO: 문제 4-1
-    raise NotImplementedError("linear_interp 를 구현하세요")
+    q_wp = np.asarray(q_wp, dtype=float)
+    if q_wp.ndim == 1:
+        return np.interp(t, t_wp, q_wp)
+    return np.column_stack([np.interp(t, t_wp, column) for column in q_wp.T])
 
 
 def cubic_spline_interp(t_wp, q_wp, t, bc_type: str = "natural") -> np.ndarray:
@@ -34,8 +36,9 @@ def cubic_spline_interp(t_wp, q_wp, t, bc_type: str = "natural") -> np.ndarray:
 
     bc_type : 양끝 경계 조건. "natural" (양끝 가속도 0) 또는 "clamped" (양끝 속도 0).
     """
-    # TODO: 문제 4-1
-    raise NotImplementedError("cubic_spline_interp 를 구현하세요")
+    from scipy.interpolate import CubicSpline
+
+    return CubicSpline(t_wp, q_wp, axis=0, bc_type=bc_type)(t)
 
 
 def quintic_profile(t, t0: float, tf: float, q0, qf,
@@ -56,8 +59,28 @@ def quintic_profile(t, t0: float, tf: float, q0, qf,
     -------
     q, qd, qdd : 위치, 속도, 가속도 (해석적 미분. 유한차분이 아니다)
     """
-    # TODO: 문제 4-4
-    raise NotImplementedError("quintic_profile 을 구현하세요")
+    duration = tf - t0
+    if duration <= 0:
+        raise ValueError("tf must be greater than t0")
+    q0, qf, v0, vf, a0, af = np.broadcast_arrays(
+        *[np.asarray(x, dtype=float) for x in (q0, qf, v0, vf, a0, af)]
+    )
+    tau = (np.asarray(t, dtype=float) - t0) / duration
+    if q0.ndim:
+        tau = tau[..., None]
+    c0 = q0
+    c1 = duration * v0
+    c2 = duration**2 * a0 / 2
+    dp = qf - c0 - c1 - c2
+    dv = duration * vf - c1 - 2 * c2
+    da = duration**2 * af - 2 * c2
+    c3 = 10 * dp - 4 * dv + da / 2
+    c4 = -15 * dp + 7 * dv - da
+    c5 = 6 * dp - 3 * dv + da / 2
+    q = c0 + tau * (c1 + tau * (c2 + tau * (c3 + tau * (c4 + tau * c5))))
+    qd = (c1 + tau * (2*c2 + tau * (3*c3 + tau * (4*c4 + tau * 5*c5)))) / duration
+    qdd = (2*c2 + tau * (6*c3 + tau * (12*c4 + tau * 20*c5))) / duration**2
+    return q, qd, qdd
 
 
 def finite_diff(y, t) -> np.ndarray:
@@ -66,5 +89,4 @@ def finite_diff(y, t) -> np.ndarray:
     y : (N,) 또는 (N, D),  t : (N,)
     속도 = finite_diff(q, t),  가속도 = finite_diff(속도, t)
     """
-    # TODO: 문제 4-2
-    raise NotImplementedError("finite_diff 를 구현하세요")
+    return np.gradient(y, t, axis=0)
